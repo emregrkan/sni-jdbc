@@ -1,6 +1,7 @@
 package com.sni.jdbc.dao;
 
 import com.sni.jdbc.data.DataSource;
+import com.sni.jdbc.entity.Building;
 import com.sni.jdbc.entity.Employee;
 
 import java.sql.Connection;
@@ -11,22 +12,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class EmployeeDaoImpl implements EmployeeDao {
+public class BuildingDaoImpl implements BuildingDao {
 
-    private static final String SQL_SAVE = "insert into employees (name, role) values (?, ?)";
-    private static final String SQL_SAVE_ALL = "insert into employees (name, role) values (?, ?)";
-    private static final String SQL_FIND_ONE =
-            "select * from employees inner join buildings on employees.building_id = buildings.id where id=?";
-    private static final String SQL_FIND_ALL = "select * from employees";
-    private static final String SQL_DELETE = "delete from employees where id=?";
-    private static final String SQL_DELETE_ALL = "delete from employees";
+    private static final String SQL_SAVE = "insert into buildings (address, working_employees) values (?, ?)";
+    private static final String SQL_SAVE_ALL = "insert into buildings (address, working_employees) values (?, ?)";
+    private static final String SQL_FIND_ONE = "select * from buildings where id=?";
+    private static final String SQL_FIND_ALL = "select * from buildings";
+    private static final String SQL_DELETE = "delete from buildings where id=?";
+    private static final String SQL_DELETE_ALL = "delete from buildings";
 
     @Override
-    public <S extends Employee> S save(S entity) {
+    public <S extends Building> S save(S entity) {
 
         try (Connection connection = DataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(SQL_SAVE)) {
-            preparedStatement.setString(1, entity.getName());
-            preparedStatement.setString(2, entity.getRole());
+            preparedStatement.setString(1, entity.getAddress());
+            preparedStatement.setInt(2, entity.getWorkingEmployees());
             int rowsInserted = preparedStatement.executeUpdate();
 
             return rowsInserted > 0 ? entity : null;
@@ -36,14 +36,14 @@ public class EmployeeDaoImpl implements EmployeeDao {
     }
 
     @Override
-    public <S extends Employee> Iterable<S> saveAll(Iterable<S> entities) {
+    public <S extends Building> Iterable<S> saveAll(Iterable<S> entities) {
 
         try (Connection connection = DataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(SQL_SAVE_ALL)) {
             int i = 0;
 
             for (S entity : entities) {
-                preparedStatement.setString(1, entity.getName());
-                preparedStatement.setString(2, entity.getRole());
+                preparedStatement.setString(1, entity.getAddress());
+                preparedStatement.setInt(2, entity.getWorkingEmployees());
                 preparedStatement.addBatch();
                 i++;
             }
@@ -58,22 +58,22 @@ public class EmployeeDaoImpl implements EmployeeDao {
     }
 
     @Override
-    public Optional<Employee> findOne(Integer integer) {
+    public Optional<Building> findOne(Integer integer) {
 
         try (Connection connection = DataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_ONE)) {
             preparedStatement.setInt(1, integer);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                Employee employee = null;
+                Building building = null;
 
                 while (resultSet.next()) {
                     int id = resultSet.getInt("id");
-                    String name = resultSet.getString("name");
-                    String role = resultSet.getString("role");
-                    employee = new Employee(id, name, role);
+                    String address = resultSet.getString("address");
+                    int workingEmployees = resultSet.getInt("working_employees");
+                    building = new Building(id, address, workingEmployees);
                 }
 
-                return Optional.ofNullable(employee);
+                return Optional.ofNullable(building);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -81,30 +81,30 @@ public class EmployeeDaoImpl implements EmployeeDao {
     }
 
     @Override
-    public Iterable<Employee> findAll() {
+    public Iterable<Building> findAll() {
 
-        Employee employee;
-        List<Employee> employees;
+        Building building;
+        List<Building> buildings;
 
         try (Connection connection = DataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_ALL); ResultSet resultSet = preparedStatement.executeQuery()) {
-            employees = new ArrayList<>();
+            buildings = new ArrayList<>();
 
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
-                String name = resultSet.getString("name");
-                String role = resultSet.getString("role");
-                employee = new Employee(id, name, role);
-                employees.add(employee);
+                String address = resultSet.getString("address");
+                int workingEmployees = resultSet.getInt("working_employees");
+                building = new Building(id, address, workingEmployees);
+                buildings.add(building);
             }
 
-            return employees;
+            return buildings;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public boolean delete(Employee entity) {
+    public boolean delete(Building entity) {
 
         try (Connection connection = DataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(SQL_DELETE)) {
             preparedStatement.setInt(1, entity.getId());

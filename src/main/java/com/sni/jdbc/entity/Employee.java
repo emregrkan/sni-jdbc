@@ -5,6 +5,7 @@ public class Employee {
     private Integer id;
     private String name;
     private String role;
+    private Building building;
 
     public Employee() {
     }
