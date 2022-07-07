@@ -1,4 +1,4 @@
-package com.sni.jdbc.repository;
+package com.sni.jdbc.data;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -11,13 +11,13 @@ public class DataSource {
     private static final HikariDataSource dataSource;
 
     static {
-        config.setJdbcUrl( "jdbc:postgresql://localhost:5432/jdbc" );
-        config.setUsername( "postgres" );
-        config.setPassword( "postgres" );
-        config.addDataSourceProperty( "cachePrepStmts" , "true" );
-        config.addDataSourceProperty( "prepStmtCacheSize" , "250" );
-        config.addDataSourceProperty( "prepStmtCacheSqlLimit" , "2048" );
-        dataSource = new HikariDataSource( config );
+        config.setJdbcUrl("jdbc:postgresql://localhost:5432/jdbc");
+        config.setUsername("postgres");
+        config.setPassword("postgres");
+        config.addDataSourceProperty("cachePrepStmts", "true");
+        config.addDataSourceProperty("prepStmtCacheSize", "250");
+        config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+        dataSource = new HikariDataSource(config);
     }
 
     private DataSource() {

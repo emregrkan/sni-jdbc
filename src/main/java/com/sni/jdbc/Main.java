@@ -1,14 +1,12 @@
 package com.sni.jdbc;
 
 import com.sni.jdbc.dao.EmployeeDao;
-import com.sni.jdbc.entity.Employee;
+import com.sni.jdbc.dao.EmployeeDaoImpl;
+
 
 public class Main {
     public static void main(String[] args) {
-        EmployeeDao employeeDao = new EmployeeDao();
-        Employee employee = employeeDao.findOne(1000).orElse(null);
-        boolean isDeleted = employeeDao.delete(employee);
-        System.out.println(isDeleted);
+        EmployeeDao employeeDao = new EmployeeDaoImpl();
         employeeDao.findAll().forEach(System.out::println);
     }
 }
